@@ -58,5 +58,27 @@ describe('Login Tests', () => {
       cy.get('.cart_item').should('not.exist');
     });
   });
+
+  describe('Checkout Tests', () => {
+    beforeEach(() => {
+      cy.visit('https://www.saucedemo.com');
+      cy.get('#user-name').type('standard_user');
+      cy.get('#password').type('secret_sauce');
+      cy.get('#login-button').click();
+      cy.get('.inventory_item').first().find('button').click();
+      cy.get('.shopping_cart_link').click();
+    });
+  
+    it('Should complete the checkout process', () => {
+      cy.get('.checkout_button').click();
+      cy.get('#first-name').type('John');
+      cy.get('#last-name').type('Doe');
+      cy.get('#postal-code').type('12345');
+      cy.get('.cart_button').click();
+      cy.get('.cart_button').click();
+      cy.url().should('include', '/checkout-complete.html');
+    });
+  });
+  
   
   
