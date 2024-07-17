@@ -16,3 +16,16 @@ describe('Login Tests', () => {
     });
   });
   
+  describe('Product Viewing Tests', () => {
+    beforeEach(() => {
+      cy.visit('https://www.saucedemo.com');
+      cy.get('#user-name').type('standard_user');
+      cy.get('#password').type('secret_sauce');
+      cy.get('#login-button').click();
+    });
+  
+    it('Should display product list after login', () => {
+      cy.get('.inventory_item').should('have.length.greaterThan', 0);
+    });
+  });
+  
