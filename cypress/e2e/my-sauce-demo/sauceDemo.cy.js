@@ -1,84 +1,103 @@
+// Define variables for URLs, selectors, and credentials
+const baseUrl = 'https://www.saucedemo.com';
+const validUsername = 'standard_user';
+const validPassword = 'secret_sauce';
+const invalidUsername = 'invalid_user';
+const invalidPassword = 'invalid_password';
+
+const userNameSelector = '#user-name';
+const passwordSelector = '#password';
+const loginButtonSelector = '#login-button';
+const errorSelector = '.error-message-container';
+const productListSelector = '.inventory_item';
+const cartBadgeSelector = '.shopping_cart_badge';
+const cartLinkSelector = '.shopping_cart_link';
+const cartItemSelector = '.cart_item';
+const checkoutButtonSelector = '.checkout_button';
+const firstNameSelector = '#first-name';
+const lastNameSelector = '#last-name';
+const postalCodeSelector = '#postal-code';
+const checkoutCompleteUrl = '/checkout-complete.html';
+const inventoryPageUrl = '/inventory.html';
+
 describe('Login Tests', () => {
     it('Should login with valid credentials', () => {
-      cy.visit('https://www.saucedemo.com');
-      cy.get('#user-name').type('standard_user');
-      cy.get('#password').type('secret_sauce');
-      cy.get('#login-button').click();
-      cy.url().should('include', '/inventory.html');
+        cy.visit(baseUrl);
+        cy.get(userNameSelector).type(validUsername);
+        cy.get(passwordSelector).type(validPassword);
+        cy.get(loginButtonSelector).click();
+        cy.url().should('include', inventoryPageUrl);
     });
-  
+
     it('Should not login with invalid credentials', () => {
-      cy.visit('https://www.saucedemo.com');
-      cy.get('#user-name').type('invalid_user');
-      cy.get('#password').type('invalid_password');
-      cy.get('#login-button').click();
-      cy.get('.error-message-container').should('be.visible');
+        cy.visit(baseUrl);
+        cy.get(userNameSelector).type(invalidUsername);
+        cy.get(passwordSelector).type(invalidPassword);
+        cy.get(loginButtonSelector).click();
+        cy.get(errorSelector).should('be.visible');
     });
-  });
-  
-  describe('Product Viewing Tests', () => {
+});
+
+describe('Product Viewing Tests', () => {
     beforeEach(() => {
-      cy.visit('https://www.saucedemo.com');
-      cy.get('#user-name').type('standard_user');
-      cy.get('#password').type('secret_sauce');
-      cy.get('#login-button').click();
+        cy.visit(baseUrl);
+        cy.get(userNameSelector).type(validUsername);
+        cy.get(passwordSelector).type(validPassword);
+        cy.get(loginButtonSelector).click();
     });
-  
+
     it('Should display product list after login', () => {
-      cy.get('.inventory_item').should('have.length.greaterThan', 0);
+        cy.get(productListSelector).should('have.length.greaterThan', 0);
     });
-  });
+});
 
-  describe('Add to Cart Tests', () => {
+describe('Add to Cart Tests', () => {
     beforeEach(() => {
-      cy.visit('https://www.saucedemo.com');
-      cy.get('#user-name').type('standard_user');
-      cy.get('#password').type('secret_sauce');
-      cy.get('#login-button').click();
+        cy.visit(baseUrl);
+        cy.get(userNameSelector).type(validUsername);
+        cy.get(passwordSelector).type(validPassword);
+        cy.get(loginButtonSelector).click();
     });
-  
+
     it('Should add a product to the cart', () => {
-      cy.get('.inventory_item').first().find('button').click();
-      cy.get('.shopping_cart_badge').should('contain', '1');
+        cy.get(productListSelector).first().find('button').click();
+        cy.get(cartBadgeSelector).should('contain', '1');
     });
-  });
-  
-  describe('Remove from Cart Tests', () => {
-    beforeEach(() => {
-      cy.visit('https://www.saucedemo.com');
-      cy.get('#user-name').type('standard_user');
-      cy.get('#password').type('secret_sauce');
-      cy.get('#login-button').click();
-      cy.get('.inventory_item').first().find('button').click();
-    });
-  
-    it('Should remove a product from the cart', () => {
-      cy.get('.shopping_cart_link').click();
-      cy.get('.cart_item').first().find('button').click();
-      cy.get('.cart_item').should('not.exist');
-    });
-  });
+});
 
-  describe('Checkout Tests', () => {
+describe('Remove from Cart Tests', () => {
     beforeEach(() => {
-      cy.visit('https://www.saucedemo.com');
-      cy.get('#user-name').type('standard_user');
-      cy.get('#password').type('secret_sauce');
-      cy.get('#login-button').click();
-      cy.get('.inventory_item').first().find('button').click();
-      cy.get('.shopping_cart_link').click();
+        cy.visit(baseUrl);
+        cy.get(userNameSelector).type(validUsername);
+        cy.get(passwordSelector).type(validPassword);
+        cy.get(loginButtonSelector).click();
+        cy.get(productListSelector).first().find('button').click();
     });
-  
+
+    it('Should remove a product from the cart', () => {
+        cy.get(cartLinkSelector).click();
+        cy.get(cartItemSelector).first().find('button').click();
+        cy.get(cartItemSelector).should('not.exist');
+    });
+});
+
+describe('Checkout Tests', () => {
+    beforeEach(() => {
+        cy.visit(baseUrl);
+        cy.get(userNameSelector).type(validUsername);
+        cy.get(passwordSelector).type(validPassword);
+        cy.get(loginButtonSelector).click();
+        cy.get(productListSelector).first().find('button').click();
+        cy.get(cartLinkSelector).click();
+    });
+
     it('Should complete the checkout process', () => {
-      cy.get('.checkout_button').click();
-      cy.get('#first-name').type('John');
-      cy.get('#last-name').type('Doe');
-      cy.get('#postal-code').type('12345');
-      cy.get('.cart_button').click();
-      cy.get('.cart_button').click();
-      cy.url().should('include', '/checkout-complete.html');
+        cy.get(checkoutButtonSelector).click();
+        cy.get(firstNameSelector).type('John');
+        cy.get(lastNameSelector).type('Doe');
+        cy.get(postalCodeSelector).type('12345');
+        cy.get(checkoutButtonSelector).click();
+        cy.get(checkoutButtonSelector).click();
+        cy.url().should('include', checkoutCompleteUrl);
     });
-  });
-  
-  
-  
+});
