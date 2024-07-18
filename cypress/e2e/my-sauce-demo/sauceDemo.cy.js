@@ -1,92 +1,116 @@
-// Import Cypress library
+// Define the base URL for the tests
+const baseUrl = 'https://www.saucedemo.com';
+const validUsername = 'standard_user';
+const validPassword = 'secret_sauce';
+const invalidUsername = 'invalid_user';
+const invalidPassword = 'invalid_password';
+
+// Define CSS selectors
+const usernameField = '#user-name';
+const passwordField = '#password';
+const loginButton = '#login-button';
+const errorMessageContainer = '.error-message-container';
+const inventoryItems = '.inventory_item';
+const cartBadge = '.shopping_cart_badge';
+const cartLink = '.shopping_cart_link';
+const checkoutButton = '.checkout_button';
+const firstNameField = '#first-name';
+const lastNameField = '#last-name';
+const postalCodeField = '#postal-code';
+const cartItem = '.cart_item';
+
 describe('Login Tests', () => {
   // Test for successful login with valid credentials
   it('Should login with valid credentials', () => {
-      cy.visit(baseUrl); // Visit the base URL
-      cy.get(userNameInput).type(validUsername); // Type valid username
-      cy.get(passwordInput).type(validPassword); // Type valid password
-      cy.get(loginButton).click(); // Click the login button
-      cy.url().should('include', '/inventory.html'); // Verify URL includes inventory page
+    cy.visit(baseUrl); // Visit the base URL
+    cy.get(usernameField).type(validUsername); // Type the valid username
+    cy.get(passwordField).type(validPassword); // Type the valid password
+    cy.get(loginButton).click(); // Click the login button
+    cy.url().should('include', '/inventory.html'); // Assert that the URL includes '/inventory.html'
   });
 
-  // Test for failed login with invalid credentials
+  // Test for unsuccessful login with invalid credentials
   it('Should not login with invalid credentials', () => {
-      cy.visit(baseUrl); // Visit the base URL
-      cy.get(userNameInput).type(invalidUsername); // Type invalid username
-      cy.get(passwordInput).type(invalidPassword); // Type invalid password
-      cy.get(loginButton).click(); // Click the login button
-      cy.get(errorMessage).should('be.visible'); // Verify error message is visible
+    cy.visit(baseUrl); // Visit the base URL
+    cy.get(usernameField).type(invalidUsername); // Type an invalid username
+    cy.get(passwordField).type(invalidPassword); // Type an invalid password
+    cy.get(loginButton).click(); // Click the login button
+    cy.get(errorMessageContainer).should('be.visible'); // Assert that the error message is visible
   });
 });
 
-// Tests for product viewing functionality
+// Describe block for product viewing tests
 describe('Product Viewing Tests', () => {
+  // Hook to run before each test in this block
   beforeEach(() => {
-      cy.visit(baseUrl); // Visit the base URL
-      cy.get(userNameInput).type(validUsername); // Type valid username
-      cy.get(passwordInput).type(validPassword); // Type valid password
-      cy.get(loginButton).click(); // Click the login button
+    cy.visit(baseUrl); // Visit the base URL
+    cy.get(usernameField).type(validUsername); // Type the valid username
+    cy.get(passwordField).type(validPassword); // Type the valid password
+    cy.get(loginButton).click(); // Click the login button
   });
 
-  // Test for displaying product list after login
+  // Test to check if the product list is displayed after login
   it('Should display product list after login', () => {
-      cy.get(inventoryItems).should('have.length.greaterThan', 0); // Verify product list is displayed
+    cy.get(inventoryItems).should('have.length.greaterThan', 0); // Assert that there is at least one product item
   });
 });
 
-// Tests for adding a product to the cart
+// Describe block for add to cart tests
 describe('Add to Cart Tests', () => {
+  // Hook to run before each test in this block
   beforeEach(() => {
-      cy.visit(baseUrl); // Visit the base URL
-      cy.get(userNameInput).type(validUsername); // Type valid username
-      cy.get(passwordInput).type(validPassword); // Type valid password
-      cy.get(loginButton).click(); // Click the login button
+    cy.visit(baseUrl); // Visit the base URL
+    cy.get(usernameField).type(validUsername); // Type the valid username
+    cy.get(passwordField).type(validPassword); // Type the valid password
+    cy.get(loginButton).click(); // Click the login button
   });
 
-  // Test for adding a product to the cart
+  // Test to check if a product can be added to the cart
   it('Should add a product to the cart', () => {
-      cy.get(inventoryItems).first().find(addToCartButton).click(); // Click the add to cart button for the first item
-      cy.get(cartBadge).should('contain', '1'); // Verify cart badge shows one item
+    cy.get(inventoryItems).first().find('button').click(); // Click the first product's 'Add to cart' button
+    cy.get(cartBadge).should('contain', '1'); // Assert that the cart badge contains '1'
   });
 });
 
-// Tests for removing a product from the cart
+// Describe block for remove from cart tests
 describe('Remove from Cart Tests', () => {
+  // Hook to run before each test in this block
   beforeEach(() => {
-      cy.visit(baseUrl); // Visit the base URL
-      cy.get(userNameInput).type(validUsername); // Type valid username
-      cy.get(passwordInput).type(validPassword); // Type valid password
-      cy.get(loginButton).click(); // Click the login button
-      cy.get(inventoryItems).first().find(addToCartButton).click(); // Add a product to the cart
+    cy.visit(baseUrl); // Visit the base URL
+    cy.get(usernameField).type(validUsername); // Type the valid username
+    cy.get(passwordField).type(validPassword); // Type the valid password
+    cy.get(loginButton).click(); // Click the login button
+    cy.get(inventoryItems).first().find('button').click(); // Add a product to the cart
   });
 
-  // Test for removing a product from the cart
+  // Test to check if a product can be removed from the cart
   it('Should remove a product from the cart', () => {
-      cy.get(cartLink).click(); // Click the cart link
-      cy.get(cartItems).first().find(removeButton).click(); // Click the remove button for the first item
-      cy.get(cartItems).should('not.exist'); // Verify cart item no longer exists
+    cy.get(cartLink).click(); // Click the cart link
+    cy.get(cartItem).first().find('button').click(); // Click the 'Remove' button for the first cart item
+    cy.get(cartItem).should('not.exist'); // Assert that the cart item no longer exists
   });
 });
 
-// Tests for the checkout process
+// Describe block for checkout tests
 describe('Checkout Tests', () => {
+  // Hook to run before each test in this block
   beforeEach(() => {
-      cy.visit(baseUrl); // Visit the base URL
-      cy.get(userNameInput).type(validUsername); // Type valid username
-      cy.get(passwordInput).type(validPassword); // Type valid password
-      cy.get(loginButton).click(); // Click the login button
-      cy.get(inventoryItems).first().find(addToCartButton).click(); // Add a product to the cart
-      cy.get(cartLink).click(); // Click the cart link
+    cy.visit(baseUrl); // Visit the base URL
+    cy.get(usernameField).type(validUsername); // Type the valid username
+    cy.get(passwordField).type(validPassword); // Type the valid password
+    cy.get(loginButton).click(); // Click the login button
+    cy.get(inventoryItems).first().find('button').click(); // Add a product to the cart
+    cy.get(cartLink).click(); // Click the cart link
   });
 
-  // Test for completing the checkout process
+  // Test to check if the checkout process completes successfully
   it('Should complete the checkout process', () => {
-      cy.get(checkoutButton).click(); // Click the checkout button
-      cy.get(firstNameInput).type('John'); // Type first name
-      cy.get(lastNameInput).type('Doe'); // Type last name
-      cy.get(postalCodeInput).type('12345'); // Type postal code
-      cy.get(cartButton).click(); // Click the continue button
-      cy.get(cartButton).click(); // Click the finish button
-      cy.url().should('include', '/checkout-complete.html'); // Verify URL includes checkout complete page
+    cy.get(checkoutButton).should('be.visible').click(); // Ensure the checkout button is visible before clicking
+    cy.get(firstNameField).type('John'); // Type the first name
+    cy.get(lastNameField).type('Doe'); // Type the last name
+    cy.get(postalCodeField).type('12345'); // Type the postal code
+    cy.get(checkoutButton).should('be.visible').click(); // Ensure the continue button is visible before clicking
+    cy.get(checkoutButton).should('be.visible').click(); // Ensure the finish button is visible before clicking
+    cy.url().should('include', '/checkout-complete.html'); // Assert that the URL includes '/checkout-complete.html'
   });
 });
