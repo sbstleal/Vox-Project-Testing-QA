@@ -5,23 +5,24 @@ describe('Login Tests', () => {
     const invalidPassword = 'invalid_password';
   
     it('should login with valid credentials', () => {
-      cy.visit('https://www.saucedemo.com/v1/');
+      cy.visit('/');
       cy.get('#user-name').type(validUsername);
       cy.get('#password').type(validPassword);
       cy.get('#login-button').click();
   
-      // Verifica se o usuário está logado corretamente
+      // Check if the user is logged in correctly
       cy.url().should('include', '/inventory.html');
-      cy.get('.product_label').should('contain', 'Products');
+      cy.get('.inventory_item').should('be.visible'); // Change the selector to ensure the element exists
     });
   
     it('should not login with invalid credentials', () => {
-      cy.visit('https://www.saucedemo.com/v1/');
+      cy.visit('/');
       cy.get('#user-name').type(invalidUsername);
       cy.get('#password').type(invalidPassword);
       cy.get('#login-button').click();
   
-      // Verifica se a mensagem de erro é exibida corretamente
-      cy.get('[data-test="error"]').should('be.visible');
+      // Check if the error message is displayed correctly
+      cy.get('[data-test="error"]').should('contain', 'Epic sadface: Username and password do not match any user in this service');
     });
   });
+  
